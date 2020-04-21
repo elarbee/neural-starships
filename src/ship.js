@@ -1,14 +1,13 @@
 const utils = require('./utils');
 
 class Ship{
-    constructor(x, y, size) {
-        this.x = x;
-        this.y = y;
+    constructor(x,y, size) {
+        this.pos = new utils.Vector(x,y);
         this.size = size;
 
         this.setAngle(90);
         this.calcHeading();
-        this.turnSpeed = 1;
+        this.turnSpeed = 1.5;
         this.isTurning = false;
         this.turnDirection = 1; // Right: 1, Left: -1
 
@@ -22,7 +21,7 @@ class Ship{
 
     draw(ctx){
         ctx.save();
-        ctx.translate(this.x, this.y);
+        ctx.translate(this.pos.x, this.pos.y);
         ctx.rotate(this.radian);
         ctx.beginPath();
         ctx.moveTo(0, 0 - this.size); // tip of rectangle
@@ -46,14 +45,6 @@ class Ship{
 
     setColor(c){
         this.color = c;
-    }
-
-    getX(){
-        return this.x;
-    }
-
-    getY(){
-        return this.y;
     }
 
     accelerate(b){
@@ -82,9 +73,15 @@ class Ship{
         }
     }
 
+    updatePosition(){
+        const xSpeed = this.heading.x * this.speed;
+        const ySpeed = this.heading.y * this.speed;
+        const deltaPos = new utils.Vector(xSpeed, ySpeed);
+        this.pos = this.pos.add(deltaPos);
+    }
+
     update(ctx){
-        this.x += this.heading.x * this.speed;
-        this.y += this.heading.y * this.speed;
+        this.updatePosition();
         this.calcAccelaration();
         this.calcTurn();
         this.draw(ctx);
