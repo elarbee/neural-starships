@@ -5,11 +5,14 @@
   "main": "starships.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "browser-sync start --server --index 'src/index.html' --files 'src/*'"
+    "build": "webpack",
+    "serve": "webpack-dev-server"
   },
   "author": "Alex Elarbee",
   "license": "ISC",
   "devDependencies": {
-    "browser-sync": "^2.26.7"
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   }
 }
