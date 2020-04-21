@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const laser = require('./laser');
 
 class Ship{
     constructor(x,y, size) {
@@ -80,11 +81,24 @@ class Ship{
         this.pos = this.pos.add(deltaPos);
     }
 
+    spawnLaser(){
+        return new laser.Laser(this.calculateNosePos(), this.radian);
+    }
+
+    calculateNosePos(){
+        const noseDelta = utils.polarToCartesian(-this.size, this.radian);
+        const flipX = new utils.Vector(-noseDelta.x, noseDelta.y);
+        return this.pos.add(flipX);
+    }
+
     update(ctx){
         this.updatePosition();
         this.calcAccelaration();
         this.calcTurn();
         this.draw(ctx);
+
+        // ctx.font = "12px Arial";
+        // ctx.fillText(`x: ${Math.floor(this.calculateNosePos().x)}, y: ${Math.floor(this.calculateNosePos().y)}`, 10, 50);
     }
 }
 
