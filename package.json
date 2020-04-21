@@ -1,0 +1,15 @@
+{
+  "name": "neural-starships",
+  "version": "1.0.0",
+  "description": "",
+  "main": "starships.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "browser-sync start --server --index 'src/index.html' --files 'src/*'"
+  },
+  "author": "Alex Elarbee",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.26.7"
+  }
+}
