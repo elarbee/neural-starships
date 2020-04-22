@@ -30,9 +30,9 @@ class Game{
     gameLoop(){
         this.board.updateBoard();
         this.ships.forEach(s => {
-            s.update(ctx);
+            s.update(ctx, this.ships);
         });
-        this.player.update(ctx);
+        this.player.update(ctx, this.ships);
         this.lasers.forEach(l => l.update(ctx));
         this.checkCollision();
     }

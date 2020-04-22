@@ -15,7 +15,6 @@ class Player {
     }
 
     onkeydown(e){
-        console.log(e.keyCode);
         switch (e.keyCode) {
             case UP_CODE:
                 this.ship.accelerate(true);
@@ -55,9 +54,9 @@ class Player {
         });
     }
 
-    update(ctx){
-        this.ship.update(ctx)
-        this.debug(ctx);
+    update(ctx,ships){
+        this.ship.update(ctx,ships);
+        this.debug(ctx, ships);
     }
 }
 

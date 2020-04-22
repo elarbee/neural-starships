@@ -2,7 +2,7 @@ const range = (start, stop, step = 1) =>
     Array(Math.ceil((stop - start) / step)).fill(start).map((x, y) => x + y * step);
 
 const radian = degree => degree * (Math.PI / 180); // Convert a degree to a radian
-const degree = r => r * 180/Math.pi; // Degree from radian
+const degree = r => r * 180/Math.PI; // Degree from radian
 
 const coordToRadian = (x,y) => Math.atan2(y,x);
 
@@ -44,6 +44,22 @@ class Vector {
 
     subtract(v){
         return new Vector(this.x - v.x, this.y - v.y);
+    }
+
+    distance(v){
+        const square = n => Math.pow(n,2);
+        return Math.sqrt(square(this.x - v.x) + square(this.y - v.y));
+    }
+
+    angle(v){
+        const dx = v.x - this.x;
+        const dy = v.y - this.y;
+        const radians = Math.atan2(-dy, dx) - Math.PI/180;
+        let degrees = degree(radians);
+        if(degrees<0){
+            degrees += 360;
+        }
+        return degrees;
     }
 }
 

@@ -15,6 +15,7 @@ class Ship{
         this.id = getShipID();
         this.pos = new utils.Vector(x,y);
         this.size = shipSize;
+        this.score = 0;
 
         this.setAngle(90);
         this.calcHeading();
@@ -28,6 +29,8 @@ class Ship{
         this.drag = 0.01;
         this.isAccelerating = false;
         this.color = "#fefefe";
+
+        this.closestShip;
     }
 
     draw(ctx){
@@ -102,13 +105,6 @@ class Ship{
         return this.pos.add(flipX);
     }
 
-    update(ctx){
-        this.updatePosition();
-        this.calcAccelaration();
-        this.calcTurn();
-        this.draw(ctx);
-    }
-
     getTriangle(){
         // Nose position already calculated in seperate function
         const p0 = this.calculateNosePos();
@@ -123,21 +119,65 @@ class Ship{
         return new collision.triangle(p0,p3,p4);
     }
 
+    getClosestShip(ships){
+        if(!ships){
+            return undefined;
+        }
+        const tempShips = [];
+        ships.forEach(s => {
+            if(s.id !== this.id){
+                tempShips.push({ship:s, pos: s.pos});
+            }
+        });
+
+        let closestShip = tempShips[0].ship;
+        let closestDistance = this.pos.distance(closestShip.pos);
+        tempShips.slice(1,tempShips.length).forEach(s => {
+            const distance = this.pos.distance(s.pos);
+            if(distance < closestDistance){
+                closestShip = s.ship;
+                closestDistance = distance;
+            }
+        });
+
+        return closestShip;
+
+    }
+
     buildInputs(){
         const bindOne = n => utils.bound(n,0,1); // Limits a number to between 0 and 1
+
+        const closestShipPos = this.closestShip && this.closestShip.pos;
+        const shipDistance = this.closestShip && this.pos.distance(this.closestShip.pos);
+        const shipAngle = this.closestShip && this.pos.angle(this.closestShip.pos);
         return {
             height: bindOne(this.pos.y / globals.HEIGHT),
             width: bindOne(this.pos.x / globals.WIDTH),
+            enemyHeight: bindOne(closestShipPos.y / globals.HEIGHT),
+            enemyWidth: bindOne(closestShipPos.x / globals.WIDTH),
             speed: bindOne(this.speed / this.maxSpeed),
+            enemySpeed: bindOne(this.closestShip && this.closestShip.speed / this.maxSpeed),
+            headingX: bindOne((this.heading.x + 1) /2),
+            headingY: bindOne((this.heading.y + 1) /2),
+            enemyHeadingX: bindOne((this.closestShip && this.closestShip.heading.x + 1) /2),
+            enemyHeadingY: bindOne((this.closestShip && this.closestShip.heading.y + 1) /2),
             turning: this.isTurning ? 1 : 0,
             accelerating: this.isAccelerating ? 1 : 0,
-            closestShipAngle: 0 / 360, // Build this
-            closestShipDist: 0 / globals.WIDTH // Build this
+            closestShipAngle: shipAngle,
+            closestShipDist: shipDistance / globals.WIDTH
         }
     }
 
     kill(){
         //placeholder
+    }
+
+    update(ctx, ships){
+        this.updatePosition();
+        this.calcAccelaration();
+        this.calcTurn();
+        this.closestShip = this.getClosestShip(ships);
+        this.draw(ctx);
     }
 }
 
