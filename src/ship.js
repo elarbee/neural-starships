@@ -2,6 +2,7 @@ const utils = require('./utils');
 const laser = require('./laser');
 const collision = require('./collision');
 const globals = require('./globals');
+const brain = require('./brain');
 
 const shipSize = 10;
 
@@ -31,6 +32,8 @@ class Ship{
         this.color = "#fefefe";
 
         this.closestShip;
+
+        this.brain = this.buildBrain();
     }
 
     draw(ctx){
@@ -170,6 +173,19 @@ class Ship{
 
     kill(){
         //placeholder
+    }
+
+    buildBrain(){
+        const network = undefined;
+        const fire = () => this.spawnLaser();
+        const acc = () => this.accelerate(true);
+        const acc_stop = () => this.accelerate(false);
+        const left = () => this.turn(true, SHIP_DIRECTIONS.LEFT);
+        const stop_left = () => this.turn(false, SHIP_DIRECTIONS.LEFT);
+        const right = () => this.turn(true);
+        const stop_right = this.turn(false);
+
+        return new brain.Brain(network, fire, acc, acc_stop, left, stop_left, right, stop_right);
     }
 
     update(ctx, ships){
