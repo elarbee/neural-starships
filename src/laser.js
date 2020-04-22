@@ -14,7 +14,8 @@ class Laser{
     draw(ctx){
         ctx.save();
         ctx.translate( this.pos.x+width/2, this.pos.y+height/2 );
-        ctx.rotate(this.radian)
+        ctx.rotate(this.radian);
+        ctx.fillStyle = "#F00";
         ctx.beginPath();
         ctx.rect(-width, 0, width, height);
         ctx.fill();

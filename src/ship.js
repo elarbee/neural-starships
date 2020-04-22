@@ -1,5 +1,6 @@
 const utils = require('./utils');
 const laser = require('./laser');
+const collision = require('./collision');
 
 class Ship{
     constructor(x,y, size) {
@@ -8,7 +9,7 @@ class Ship{
 
         this.setAngle(90);
         this.calcHeading();
-        this.turnSpeed = 1.5;
+        this.turnSpeed = 2;
         this.isTurning = false;
         this.turnDirection = 1; // Right: 1, Left: -1
 
@@ -17,7 +18,7 @@ class Ship{
         this.acc = 0.1;
         this.drag = 0.01;
         this.isAccelerating = false;
-        this.color = "black";
+        this.color = "#fefefe";
     }
 
     draw(ctx){
@@ -26,12 +27,13 @@ class Ship{
         ctx.rotate(this.radian);
         ctx.beginPath();
         ctx.moveTo(0, 0 - this.size); // tip of rectangle
-        ctx.lineTo( this.size / 2, 0 + this.size ); // Right point
-        ctx.lineTo( -this.size / 2, 0 + this.size ); // left point
+        ctx.lineTo( this.size / 2, this.size ); // Right point
+        ctx.lineTo( -this.size / 2, this.size ); // left point
         ctx.fillStyle = this.color;
         ctx.fill();
 
         ctx.restore();
+
     }
 
     setAngle(a){
@@ -97,8 +99,24 @@ class Ship{
         this.calcTurn();
         this.draw(ctx);
 
-        // ctx.font = "12px Arial";
-        // ctx.fillText(`x: ${Math.floor(this.calculateNosePos().x)}, y: ${Math.floor(this.calculateNosePos().y)}`, 10, 50);
+    }
+
+    getTriangle(){
+        // Nose position already calculated in seperate function
+        const p0 = this.calculateNosePos();
+
+        // Unrotated points
+        const p1 = new utils.Vector(this.pos.x + (this.size / 2), this.pos.y + this.size);
+        const p2 = new utils.Vector(this.pos.x - (this.size / 2), this.pos.y + this.size);
+        // Rotate points p1 and p2
+        const p3 = utils.rotatePoint(this.pos, p1, this.radian);
+        const p4 = utils.rotatePoint(this.pos, p2, this.radian);
+
+        return new collision.triangle(p0,p3,p4);
+    }
+
+    kill(){
+        //placeholder
     }
 }
 

@@ -8,6 +8,15 @@ const coordToRadian = (x,y) => Math.atan2(y,x);
 
 const polarToCartesian = (r, degrees) => new Vector(r * Math.sin( degrees ), r * Math.cos(degrees));
 
+// Rotate a cartesian point around an origin point
+function rotatePoint(origin, p, radians) {
+        const cos = Math.cos(-radians);
+        const sin = Math.sin(-radians);
+        const nx = (cos * (p.x - origin.x)) + (sin * (p.y - origin.y)) + origin.x;
+        const ny = (cos * (p.y - origin.y)) - (sin * (p.x - origin.x)) + origin.y;
+    return new Vector(nx, ny);
+}
+
 class Vector {
     constructor(x, y){
         this.x = x;
@@ -40,3 +49,4 @@ exports.Vector = Vector;
 exports.coordToRadian = coordToRadian;
 exports.degree = degree;
 exports.polarToCartesian = polarToCartesian;
+exports.rotatePoint = rotatePoint;
