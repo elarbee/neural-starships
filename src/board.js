@@ -20,13 +20,10 @@ class Board {
         this.ctx = context;
     }
 
-    buildShip(x, y){
-        return new ship.Ship(x,y);
-    }
     buildShipLine(x,color, angle=90){
         const ships = [];
         utils.range(0,numShips).forEach(y => {
-            let s =  this.buildShip(x, (y * shipStartingMargin) + screenMargin);
+            let s =  new ship.Ship(x, (y * shipStartingMargin) + screenMargin);
             s.setColor(color);
             s.setAngle(angle);
             s.draw(this.ctx);
@@ -41,12 +38,6 @@ class Board {
 
     buildBadShips(){
         return this.buildShipLine(750,badColor, 270);
-    }
-
-    spawnPlayer(){
-        const player = this.buildShip(200,200);
-        player.setAngle(0);
-        return player;
     }
 
     drawBackground(){
