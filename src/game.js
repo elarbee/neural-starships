@@ -10,7 +10,7 @@ class Game{
     constructor(){
         this.board = new Board.Board(ctx);
         this.lasers = [];
-        this.ships = this.board.buildBadShips().concat(this.board.buildGoodShips());
+        this.ships = this.board.buildShips();
         this.player = new Player.Player(400,200, this);
         setInterval(this.gameLoop.bind(this), 1000/60);
     }

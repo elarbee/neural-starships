@@ -40,6 +40,26 @@ class Board {
         return this.buildShipLine(750,badColor, 270);
     }
 
+    // Puts a ship in each corner and the center of each side of the board
+    buildShips(){
+        // Corner positions
+        const c0 = {pos: new utils.Vector(shipStartingMargin, shipStartingMargin), angle: 135};
+        const c1 = {pos: new utils.Vector(width - shipStartingMargin, shipStartingMargin), angle: 225};
+        const c2 = {pos: new utils.Vector(width - shipStartingMargin, height - shipStartingMargin), angle: 315};
+        const c3 = {pos: new utils.Vector(shipStartingMargin, height - shipStartingMargin), angle: 45};
+        // Side positions
+        const s0 = {pos: new utils.Vector(width/2, shipStartingMargin), angle: 180};
+        const s1 = {pos: new utils.Vector(width/2, height - shipStartingMargin), angle: 0};
+        const s2 = {pos: new utils.Vector(width - shipStartingMargin, height/2), angle: 270};
+        const s3 = {pos: new utils.Vector(shipStartingMargin, height/2), angle: 90};
+
+        const positions = [c0,c1,c2,c3,s0,s1,s2,s3];
+        const ships = positions.map(p => new ship.Ship(p.pos.x, p.pos.y));
+        ships.forEach((s,i) => s.setAngle(positions[i].angle));
+
+        return ships;
+    }
+
     drawBackground(){
         this.ctx.fillStyle = "#2a2a2a";
         this.ctx.fillRect(0, 0, width, height);

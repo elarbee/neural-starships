@@ -2,7 +2,7 @@ const utils = require('./utils');
 
 const width = 5;
 const height = 10;
-const speed = 10;
+const speed = 20;
 class Laser{
 
     constructor(position, radian){

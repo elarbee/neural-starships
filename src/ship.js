@@ -2,7 +2,7 @@ const utils = require('./utils');
 const laser = require('./laser');
 const collision = require('./collision');
 
-const shipSize = 25;
+const shipSize = 10;
 class Ship{
     constructor(x,y) {
         this.pos = new utils.Vector(x,y);
