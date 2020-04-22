@@ -1,10 +1,18 @@
 const utils = require('./utils');
 const laser = require('./laser');
 const collision = require('./collision');
+const globals = require('./globals');
 
 const shipSize = 10;
+
+const getShipID = (function () {
+    let counter = -1;
+    return function () {counter += 1; return counter}
+})();
+
 class Ship{
     constructor(x,y) {
+        this.id = getShipID();
         this.pos = new utils.Vector(x,y);
         this.size = shipSize;
 
@@ -99,7 +107,6 @@ class Ship{
         this.calcAccelaration();
         this.calcTurn();
         this.draw(ctx);
-
     }
 
     getTriangle(){
@@ -114,6 +121,19 @@ class Ship{
         const p4 = utils.rotatePoint(this.pos, p2, this.radian);
 
         return new collision.triangle(p0,p3,p4);
+    }
+
+    buildInputs(){
+        const bindOne = n => utils.bound(n,0,1); // Limits a number to between 0 and 1
+        return {
+            height: bindOne(this.pos.y / globals.HEIGHT),
+            width: bindOne(this.pos.x / globals.WIDTH),
+            speed: bindOne(this.speed / this.maxSpeed),
+            turning: this.isTurning ? 1 : 0,
+            accelerating: this.isAccelerating ? 1 : 0,
+            closestShipAngle: 0 / 360, // Build this
+            closestShipDist: 0 / globals.WIDTH // Build this
+        }
     }
 
     kill(){

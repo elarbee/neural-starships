@@ -44,8 +44,20 @@ class Player {
         }
     }
 
+    debug(ctx){
+        const i = this.ship.buildInputs();
+        let y = 12;
+        Object.keys(i).forEach(key => {
+            ctx.font = "12px Arial";
+            ctx.fillStyle = "white";
+            ctx.fillText(`${key}: ${i[key]}`, 10, y)
+            y+=14;
+        });
+    }
+
     update(ctx){
         this.ship.update(ctx)
+        this.debug(ctx);
     }
 }
 

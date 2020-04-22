@@ -8,6 +8,10 @@ const coordToRadian = (x,y) => Math.atan2(y,x);
 
 const polarToCartesian = (r, degrees) => new Vector(r * Math.sin( degrees ), r * Math.cos(degrees));
 
+const lowerBound = (n,min) => Math.max(n,min)
+
+const bound = (n, min, max) => Math.min(Math.max(n,min),max);
+
 // Rotate a cartesian point around an origin point
 function rotatePoint(origin, p, radians) {
         const cos = Math.cos(-radians);
@@ -50,3 +54,4 @@ exports.coordToRadian = coordToRadian;
 exports.degree = degree;
 exports.polarToCartesian = polarToCartesian;
 exports.rotatePoint = rotatePoint;
+exports.bound = bound;
