@@ -12,7 +12,8 @@ const getShipID = (function () {
 })();
 
 class Ship{
-    constructor(x,y) {
+    constructor(x,y, game) {
+        this.game = game;
         this.id = getShipID();
         this.pos = new utils.Vector(x,y);
         this.size = shipSize;
@@ -99,7 +100,7 @@ class Ship{
     }
 
     spawnLaser(){
-        return new laser.Laser(this.calculateNosePos(), this.radian);
+        this.game.lasers.push(new laser.Laser(this.calculateNosePos(), this.radian, this));
     }
 
     calculateNosePos(){
@@ -172,7 +173,7 @@ class Ship{
     }
 
     kill(){
-        //placeholder
+        this.score += globals.DEATH_SCORE;
     }
 
     buildBrain(){
@@ -183,16 +184,24 @@ class Ship{
         const left = () => this.turn(true, SHIP_DIRECTIONS.LEFT);
         const stop_left = () => this.turn(false, SHIP_DIRECTIONS.LEFT);
         const right = () => this.turn(true);
-        const stop_right = this.turn(false);
+        const stop_right = () => this.turn(false);
 
         return new brain.Brain(network, fire, acc, acc_stop, left, stop_left, right, stop_right);
     }
 
+    updateBrain(){
+        const i = Object.values(this.buildInputs());
+        this.brain.update(i);
+    }
+
     update(ctx, ships){
+        this.score += globals.TIME_SCORE;
         this.updatePosition();
         this.calcAccelaration();
         this.calcTurn();
         this.closestShip = this.getClosestShip(ships);
+        this.updateBrain();
+
         this.draw(ctx);
     }
 }

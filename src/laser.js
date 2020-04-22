@@ -5,9 +5,10 @@ const height = 10;
 const speed = 20;
 class Laser{
 
-    constructor(position, radian){
+    constructor(position, radian, ship){
         this.pos = position;
         this.radian = radian;
+        this.ship = ship;
         this.calcHeading();
     }
 

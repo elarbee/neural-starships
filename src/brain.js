@@ -1,7 +1,8 @@
+const net = require('./network');
 
 class Brain{
     constructor(network, acc, acc_stop, fire, left, stop_left, right, stop_right){
-        this.network = network; // Neural Network to controls the ship
+        this.network = new net.Network(); // Neural Network to controls the ship
         this.fire = fire; // Function that fires a laser
         this.acc = acc; // Function that acellerates the ship
         this.acc_stop = acc_stop; // Function that stops accelerating the ship
@@ -12,12 +13,18 @@ class Brain{
     }
 
     process(output){
-
+        const fns = [this.fire, this.acc, this.acc_stop, this.left, this.stop_left, this.right, this.stop_right];
+        output.forEach((o,i) => {
+            const f = fns[i];
+            if(o > 0.5){
+                fns[i].call();
+            }
+        })
     }
 
     update(input){
-        // this.network.train(input)
-        this.process();
+        const output = this.network.predict(input);
+        this.process(output);
     }
 }
 

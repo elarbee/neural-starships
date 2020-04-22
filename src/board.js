@@ -16,8 +16,9 @@ const badColor = "#ea0000";
 
 class Board {
 
-    constructor(context){
+    constructor(context, game){
         this.ctx = context;
+        this.game = game;
     }
 
     buildShipLine(x,color, angle=90){
@@ -54,7 +55,7 @@ class Board {
         const s3 = {pos: new utils.Vector(shipStartingMargin, height/2), angle: 90};
 
         const positions = [c0,c1,c2,c3,s0,s1,s2,s3];
-        const ships = positions.map(p => new ship.Ship(p.pos.x, p.pos.y));
+        const ships = positions.map(p => new ship.Ship(p.pos.x, p.pos.y, this.game));
         ships.forEach((s,i) => s.setAngle(positions[i].angle));
 
         return ships;
