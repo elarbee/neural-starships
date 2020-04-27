@@ -1,4 +1,5 @@
 const synaptic = require('synaptic');
+const globals = require('./globals');
 
 class Network{
     constructor(){
@@ -6,7 +7,24 @@ class Network{
     }
 
     spawnNetwork(){
-       return new synaptic.Architect.Perceptron(14, 21, 21,21, 7);
+        const input = 4;
+        const output = 3;
+        const hidden = input + output;
+        return new synaptic.Architect.Perceptron(input, hidden, hidden, output);
+    }
+
+    mutate(){
+        this.network.layers.input.list.forEach(this.mutateNeuron);
+        this.network.layers.hidden.forEach(l => l.list.forEach(this.mutateNeuron));
+        this.network.layers.output.list.forEach(this.mutateNeuron);
+        return this.network;
+    }
+
+    mutateNeuron(n){
+        if(Math.random() < globals.MUTATION_RATE){
+            const b = n.bias;
+            n.bias += (globals.MUTATION_STRENGTH * (Math.random() > 0.5 ? 1 : -1))
+        }
     }
 
     predict(input){

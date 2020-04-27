@@ -1,5 +1,9 @@
 const utils = require('./utils');
 
+const pointWithinCircle = (p, circle, radius) => {
+    return Math.pow((p.x - circle.x),2) + Math.pow((p.y - circle.y),2) < Math.pow(radius,2);
+};
+
 class Triangle {
     constructor(p0,p1,p2){ // Vector2 points
         this.p0 = p0;
@@ -35,3 +39,4 @@ class Line {
 }
 
 exports.triangle = Triangle;
+exports.pointWithinCircle = pointWithinCircle;

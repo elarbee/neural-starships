@@ -63,6 +63,19 @@ class Vector {
     }
 }
 
+class Time {
+    constructor(){
+        this.startTime = this.currentTime();
+    }
+
+    currentTime(){
+        return new Date().getTime();
+    }
+
+    getTimeElapsed(){
+        return this.currentTime() - this.startTime;
+    }
+}
 exports.range = range;
 exports.radian = radian;
 exports.Vector = Vector;

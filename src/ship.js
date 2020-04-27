@@ -12,28 +12,32 @@ const getShipID = (function () {
 })();
 
 class Ship{
-    constructor(x,y, game) {
+    constructor(x,y,network, game) {
         this.game = game;
         this.id = getShipID();
+        this.startTime = new Date().getTime();
         this.pos = new utils.Vector(x,y);
         this.size = shipSize;
         this.score = 0;
+        this.state = SHIP_STATE.ALIVE;
 
         this.setAngle(90);
         this.calcHeading();
-        this.turnSpeed = 2;
+        this.turnSpeed = 5;
         this.isTurning = false;
         this.turnDirection = 1; // Right: 1, Left: -1
 
         this.speed = 0;
-        this.maxSpeed = 5;
+        this.maxSpeed = 3;
         this.acc = 0.1;
         this.drag = 0.01;
-        this.isAccelerating = false;
+        this.isAccelerating = true;
+        this.canFire = true;
         this.color = "#fefefe";
 
         this.closestShip;
 
+        this.network = network;
         this.brain = this.buildBrain();
     }
 
@@ -93,6 +97,22 @@ class Ship{
     }
 
     updatePosition(){
+        if(this.pos.x < 0){
+            this.pos.x = globals.WIDTH
+        }
+        if(
+            this.pos.x > globals.WIDTH
+        ){
+            this.pos.x = 0;
+        }
+        if(this.pos.y < 0){
+            this.pos.y = globals.HEIGHT
+        }
+        if(
+            this.pos.y > globals.HEIGHT
+        ){
+            this.pos.y = 0;
+        }
         const xSpeed = this.heading.x * this.speed;
         const ySpeed = this.heading.y * this.speed;
         const deltaPos = new utils.Vector(xSpeed, ySpeed);
@@ -100,7 +120,11 @@ class Ship{
     }
 
     spawnLaser(){
-        this.game.lasers.push(new laser.Laser(this.calculateNosePos(), this.radian, this));
+        if(this.canFire) {
+            this.game.lasers.push(new laser.Laser(this.calculateNosePos(), this.radian, this));
+            this.canFire = false;
+            setTimeout(() => this.canFire = true, globals.SHIP_FIRE_RATE);
+        }
     }
 
     calculateNosePos(){
@@ -153,63 +177,71 @@ class Ship{
 
         const closestShipPos = this.closestShip && this.closestShip.pos;
         const shipDistance = this.closestShip && this.pos.distance(this.closestShip.pos);
-        const shipAngle = this.closestShip && this.pos.angle(this.closestShip.pos);
-        return {
-            height: bindOne(this.pos.y / globals.HEIGHT),
-            width: bindOne(this.pos.x / globals.WIDTH),
-            enemyHeight: bindOne(closestShipPos.y / globals.HEIGHT),
-            enemyWidth: bindOne(closestShipPos.x / globals.WIDTH),
-            speed: bindOne(this.speed / this.maxSpeed),
-            enemySpeed: bindOne(this.closestShip && this.closestShip.speed / this.maxSpeed),
-            headingX: bindOne((this.heading.x + 1) /2),
-            headingY: bindOne((this.heading.y + 1) /2),
-            enemyHeadingX: bindOne((this.closestShip && this.closestShip.heading.x + 1) /2),
-            enemyHeadingY: bindOne((this.closestShip && this.closestShip.heading.y + 1) /2),
-            turning: this.isTurning ? 1 : 0,
-            accelerating: this.isAccelerating ? 1 : 0,
-            closestShipAngle: shipAngle,
+        const score = {
+            timeAlive: this.getTimeAlive() / globals.GENERATION_TIME,
+            direction: this.angle / 360,
+            enemyDirection: this.closestShip && this.closestShip.angle / 360,
             closestShipDist: shipDistance / globals.WIDTH
-        }
+        };
+
+        // Limit all inputs to between 0 and 1
+        Object.keys(score).forEach(key => {
+           score[key] = bindOne(score[key]);
+        });
+        return score;
     }
 
     kill(){
         this.score += globals.DEATH_SCORE;
+        this.state = SHIP_STATE.DEAD;
+        this.game.removeShip(this.id);
+    }
+
+    getTimeAlive(){
+        const now = new Date().getTime();
+        return now - this.startTime;
     }
 
     buildBrain(){
-        const network = undefined;
-        const fire = () => this.spawnLaser();
-        const acc = () => this.accelerate(true);
-        const acc_stop = () => this.accelerate(false);
-        const left = () => this.turn(true, SHIP_DIRECTIONS.LEFT);
-        const stop_left = () => this.turn(false, SHIP_DIRECTIONS.LEFT);
-        const right = () => this.turn(true);
-        const stop_right = () => this.turn(false);
+        const network = this.network;
+        const fire = n => n > 0.5 ? this.spawnLaser() : null;
+        const left = n => this.turn(n > 0.5, SHIP_DIRECTIONS.LEFT);
+        const right = n => this.turn(n > 0.5);
 
-        return new brain.Brain(network, fire, acc, acc_stop, left, stop_left, right, stop_right);
+        return new brain.Brain(network, fire, left, right);
     }
 
     updateBrain(){
         const i = Object.values(this.buildInputs());
+        if(this.id === 0){
+            console.log(i);
+        }
         this.brain.update(i);
     }
 
     update(ctx, ships){
-        this.score += globals.TIME_SCORE;
-        this.updatePosition();
-        this.calcAccelaration();
-        this.calcTurn();
-        this.closestShip = this.getClosestShip(ships);
-        this.updateBrain();
+        if(this.state === SHIP_STATE.ALIVE) {
+            this.score += globals.TIME_SCORE;
+            this.updatePosition();
+            this.calcAccelaration();
+            this.calcTurn();
+            this.closestShip = this.getClosestShip(ships);
+            this.updateBrain();
 
-        this.draw(ctx);
+            this.draw(ctx);
+        }
     }
 }
+
+const SHIP_STATE = {
+    ALIVE: 0,
+    DEAD: 1
+};
 
 const SHIP_DIRECTIONS = {
     LEFT: -1,
     RIGHT: 1
-}
+};
 
 exports.Ship = Ship;
 exports.SHIP_DIRECTIONS = SHIP_DIRECTIONS;
