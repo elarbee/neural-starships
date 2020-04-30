@@ -8,17 +8,17 @@ class Brain{
         this.right = right; // // Function that turns the ship right
     }
 
-    process(output){
-        const fns = [this.fire, this.left, this.right];
-        output.forEach((o,i) => {
-            const f = fns[i];
-                fns[i](o);
-        })
-    }
+    // process(output){
+    //     const fns = [this.fire, this.left, this.right];
+    //     output.forEach((o,i) => {
+    //         const f = fns[i];
+    //             fns[i](o);
+    //     })
+    // }
 
     update(input){
         const output = this.network.predict(input);
-        this.process(output);
+        // this.process(output);
         return output;
     }
 }

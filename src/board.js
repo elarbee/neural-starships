@@ -1,6 +1,7 @@
 const ship = require('./ship.js');
 const utils = require('./utils');
 const globals = require('./globals');
+const net = require('./network');
 
 
 const width = globals.HEIGHT;
@@ -17,9 +18,8 @@ const badColor = "#ea0000";
 
 class Board {
 
-    constructor(context,brains, game){
+    constructor(context, game){
         this.ctx = context;
-        this.brains = brains;
         this.game = game;
     }
 
@@ -44,7 +44,7 @@ class Board {
     // }
 
     // Puts a ship in each corner and the center of each side of the board
-    buildCornerShips(){
+    buildCornerShips(networks){
         // Corner positions
         const c0 = {pos: new utils.Vector(shipStartingMargin, shipStartingMargin), angle: 135};
         const c1 = {pos: new utils.Vector(width - shipStartingMargin, shipStartingMargin), angle: 225};
@@ -57,7 +57,10 @@ class Board {
         const s3 = {pos: new utils.Vector(shipStartingMargin, height/2 - shipStartingMargin), angle: 90};
 
         const positions = [c0,c1,c2,c3,s0,s1,s2,s3];
-        const ships = positions.map(p => new ship.Ship(p.pos.x, p.pos.y,this.network, this.game));
+
+        const ships = positions.map((p,i) => {
+            return new ship.Ship(p.pos.x, p.pos.y,networks[i], this.game)
+        });
         ships.forEach((s,i) => s.setAngle(positions[i].angle));
 
         return ships;
@@ -72,6 +75,18 @@ class Board {
     //
     //     return ships;
     // }
+
+    // buildShip(){
+    //         const s0 = {pos: new utils.Vector(shipStartingMargin, height/2), angle: 0};
+    //         const s1 = {pos: new utils.Vector(width - shipStartingMargin, height/2), angle: 0};
+    //         const positions = [s0,s1];
+    //         const network = new net.Network().mutate();
+    //         const ships = positions.map(p => new ship.Ship(p.pos.x, p.pos.y, network, this.game));
+    //         ships.forEach((s,i) => s.setAngle(positions[i].angle));
+    //
+    //         return ships;
+    // }
+
 
     drawBackground(){
         this.ctx.fillStyle = "#2a2a2a";

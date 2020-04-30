@@ -6,7 +6,7 @@ export const SHIP_FIRE_RATE = 500;
 export const SHIP_COLLISION_RADIUS = 20;
 export const GENERATION_TIME = 10000;
 
-export const MUTATION_RATE = 0.15;
+export const MUTATION_RATE = 0.2;
 export const MUTATION_STRENGTH = 0.1;
 export const NUM_SURVIVORS = 3;
 

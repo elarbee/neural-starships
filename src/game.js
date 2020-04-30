@@ -14,9 +14,9 @@ class Game{
     }
 
     newGame(minds){
-        this.board = new Board.Board(ctx,minds, this);
+        this.board = new Board.Board(ctx,this);
         this.lasers = [];
-        this.ships = this.board.buildCornerShips();
+        this.ships = this.board.buildCornerShips(minds);
         this.saveShips = [...this.ships];
         this.generationNum = 0;
         this.setTimers();
@@ -73,7 +73,7 @@ class Game{
 
     gameLoop(){
         this.board.updateBoard();
-        if(this.ships.length <= 1){
+        if(this.ships.length < 1){
             this.newGeneration();
             return;
         }

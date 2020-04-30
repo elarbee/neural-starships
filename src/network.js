@@ -1,4 +1,5 @@
 const synaptic = require('synaptic');
+const tensorFlow = require('@tensorflow/tfjs');
 const globals = require('./globals');
 
 class Network{
@@ -22,8 +23,13 @@ class Network{
 
     mutateNeuron(n){
         if(Math.random() < globals.MUTATION_RATE){
-            const b = n.bias;
-            n.bias += (globals.MUTATION_STRENGTH * (Math.random() > 0.5 ? 1 : -1))
+            n.bias = n.bias + (globals.MUTATION_STRENGTH * (Math.random() > 0.5 ? 1 : -1));
+            const projected = Object.keys(n.connections.projected);
+            if(projected.length) {
+                projected.forEach(key => {
+                    n.connections.projected[key].weight += (globals.MUTATION_STRENGTH * (Math.random() > 0.5 ? 1 : -1));
+                });
+            }
         }
     }
 

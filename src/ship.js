@@ -97,6 +97,24 @@ class Ship{
     }
 
     updatePosition(){
+        if(this.isOutOfBounds()){
+            this.kill()
+        } else {
+            const xSpeed = this.heading.x * this.speed;
+            const ySpeed = this.heading.y * this.speed;
+            const deltaPos = new utils.Vector(xSpeed, ySpeed);
+            this.pos = this.pos.add(deltaPos);
+        }
+    }
+
+    isOutOfBounds(){
+        return this.pos.x < 0 ||
+            this.pos.x > globals.WIDTH ||
+            this.pos.y < 0 ||
+            this.pos.y > globals.HEIGHT;
+    }
+
+    loopBoundaries(){
         if(this.pos.x < 0){
             this.pos.x = globals.WIDTH
         }
@@ -113,10 +131,6 @@ class Ship{
         ){
             this.pos.y = 0;
         }
-        const xSpeed = this.heading.x * this.speed;
-        const ySpeed = this.heading.y * this.speed;
-        const deltaPos = new utils.Vector(xSpeed, ySpeed);
-        this.pos = this.pos.add(deltaPos);
     }
 
     spawnLaser(){
@@ -148,7 +162,7 @@ class Ship{
     }
 
     getClosestShip(ships){
-        if(!ships){
+        if(!ships || ships.length <= 1){
             return undefined;
         }
         const tempShips = [];
@@ -177,6 +191,7 @@ class Ship{
 
         const closestShipPos = this.closestShip && this.closestShip.pos;
         const shipDistance = this.closestShip && this.pos.distance(this.closestShip.pos);
+        
         const score = {
             timeAlive: this.getTimeAlive() / globals.GENERATION_TIME,
             direction: this.angle / 360,
@@ -213,10 +228,15 @@ class Ship{
 
     updateBrain(){
         const i = Object.values(this.buildInputs());
-        if(this.id === 0){
-            console.log(i);
+        const output = this.brain.update(i);
+        const fireOut = output[0];
+        const leftOut = output[1];
+        const rightOut = output[2];
+        if(fireOut > 0.50){
+            this.spawnLaser();
         }
-        this.brain.update(i);
+        this.turn(leftOut > 0.50, SHIP_DIRECTIONS.LEFT);
+        this.turn(rightOut > 0.50, SHIP_DIRECTIONS.RIGHT);
     }
 
     update(ctx, ships){
